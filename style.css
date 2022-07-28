@@ -1,0 +1,70 @@
+html, body {
+    height: 100%;
+    margin: 0.25rem 0.5rem;
+    font-family: Verdana, Trebuchet, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    text-align: left;
+    line-height: 1.5;
+
+    display: flex; 
+    flex-direction: column; 
+}
+
+h1, h2, h3 {
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+p {
+    margin: 0.25rem 0;
+}
+
+button {
+    font-family: Verdana, Trebuchet, Helvetica, Arial, sans-serif;
+}
+
+/* File upload area */
+#excel-word-files {
+    width: 100%;
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.fileGroup {
+    width: 50%;
+    max-width: 50%;       
+}
+
+/* Rows for specifying which cells to pull */
+#all-excel-groups {
+    border-top: 2px solid #00000030;
+}
+
+.excelGroup {
+    padding: 0.5rem 0.25rem;
+    border-bottom: 2px dashed #00000030;
+
+    display: flex;
+    justify-content: space-around;
+}
+
+.excelGroup input, .excelGroup button, .excelGroup p, .excelGroup select {
+    text-align: center;
+    width: 7rem;
+}
+
+.excelGroup input {
+    text-align: left;
+}
+
+/* Remaining buttons */
+.centered-button {
+    text-align: center;
+}
+
+#add-excel-group, #run {
+    width: 12rem;
+    height: 1.5rem;
+    margin: 0.5rem 0;
+}

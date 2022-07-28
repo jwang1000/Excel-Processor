@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset = "UTF-8">
+    <meta name = "author" content = "Jonathan Wang">
+    <meta name = "viewport" content = "width=device-width,initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+    <link rel = "stylesheet" type = "text/css" href = "style.css">
+    <!--<link rel = "icon" type = "image/png" href = "Icons/logofavicon.png">-->
+</head>
+
+<body>
+    <h1>Excel to Word Processor</h1>
+    <h3>Process text from an Excel sheet and insert it into a Word document by replacing tags</h3>
+    <p>👋</p>
+
+    <!--info is auto filled by js, adds details of runtime versions-->
+    <!--TODO remove-->
+    <p id="info"></p>
+
+    <div id="excel-word-files">
+        <div class="fileGroup">
+            <button type="button" id="btn">Open Excel File</button>
+            File path: <strong id="filePath"></strong>
+        </div>
+        <div class="fileGroup">
+            <button type="button" id="btn">Open Word File</button>
+            File path: <strong id="filePath"></strong>
+        </div>
+    </div>
+
+    <!--Auto filled by js-->
+    <div id="all-excel-groups">
+        <div class="excelGroup">
+            <p>Column</p>
+            <p>Start Row</p>
+            <p>End Row</p>
+            <p>Which Cells?</p>
+            <p># of Cells</p>
+            <p>Delete Group</p>
+        </div>
+    </div>
+
+    <div class="centered-button">
+        <button id="add-excel-group" type="button">Add Excel Group</button>
+    </div>
+    
+    <div class="centered-button">
+        <button id="run">Move text to Word doc!</button>
+    </div>
+    
+</body>
+<script src="./renderer.js"></script>
+
+</html>
