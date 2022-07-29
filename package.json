@@ -19,7 +19,9 @@
     "electron": "^19.0.9"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "docxtemplater": "^3.31.2",
+    "electron-squirrel-startup": "^1.0.0",
+    "read-excel-file": "^5.4.4"
   },
   "config": {
     "forge": {

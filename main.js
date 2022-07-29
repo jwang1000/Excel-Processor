@@ -12,15 +12,18 @@ async function handleFileOpen() {
 
 const createWindow = () => {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        minWidth: 900,
+        minHeight: 500,
         title: "Excel to Word",
+        show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
     });
+    win.maximize();
     ipcMain.handle('ping', () => 'pong');
     win.loadFile('index.html');
+    win.show();
 }
 
 app.whenReady().then(() => {

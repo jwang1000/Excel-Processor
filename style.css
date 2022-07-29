@@ -19,7 +19,7 @@ p {
     margin: 0.25rem 0;
 }
 
-button {
+input, select, button {
     font-family: Verdana, Trebuchet, Helvetica, Arial, sans-serif;
 }
 
@@ -33,7 +33,13 @@ button {
 
 .fileGroup {
     width: 50%;
-    max-width: 50%;       
+    max-width: 50%;  
+    display: flex;
+    flex-direction: column;     
+}
+
+#excel-file-button, #word-file-button {
+    width: 10rem;
 }
 
 /* Rows for specifying which cells to pull */
@@ -51,20 +57,26 @@ button {
 
 .excelGroup input, .excelGroup button, .excelGroup p, .excelGroup select {
     text-align: center;
-    width: 7rem;
+    width: 8rem;
+    height: 1.5rem;
 }
 
-.excelGroup input {
-    text-align: left;
+.excelGroup input, .excelGroup select {
+    border: none;
+    border-bottom: solid gray 1px;
+}
+
+.excelGroup select, .excelGroup button {
+    height: 1.9rem;
 }
 
 /* Remaining buttons */
-.centered-button {
+.centered {
     text-align: center;
 }
 
 #add-excel-group, #run {
     width: 12rem;
-    height: 1.5rem;
+    height: 2rem;
     margin: 0.5rem 0;
 }

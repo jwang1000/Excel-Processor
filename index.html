@@ -22,12 +22,12 @@
 
     <div id="excel-word-files">
         <div class="fileGroup">
-            <button type="button" id="btn">Open Excel File</button>
-            File path: <strong id="filePath"></strong>
+            <button type="button" id="excel-file-button">Open Excel File</button>
+            <p>File: <strong id="file-path-excel"></strong></p>
         </div>
         <div class="fileGroup">
-            <button type="button" id="btn">Open Word File</button>
-            File path: <strong id="filePath"></strong>
+            <button type="button" id="word-file-button">Open Word File</button>
+            <p>File: <strong id="file-path-word"></strong></p>
         </div>
     </div>
 
@@ -38,17 +38,21 @@
             <p>Start Row</p>
             <p>End Row</p>
             <p>Which Cells?</p>
-            <p># of Cells</p>
-            <p>Delete Group</p>
+            <p>Tag to Replace</p>
+            <p></p>
         </div>
     </div>
 
-    <div class="centered-button">
+    <div class="centered">
         <button id="add-excel-group" type="button">Add Excel Group</button>
     </div>
     
-    <div class="centered-button">
+    <div class="centered">
         <button id="run">Move text to Word doc!</button>
+    </div>
+
+    <div class="centered">
+        <p>Status: <div id="status"></div></p>
     </div>
     
 </body>
