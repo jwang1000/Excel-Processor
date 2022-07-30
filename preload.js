@@ -5,11 +5,18 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('versions', {
     node: () => process.versions.node,
     chrome: () => process.versions.chrome,
-    electron: () => process.versions.electron,
-    ping: () => ipcRenderer.invoke('ping'),
-    // we can also expose variables, not just functions
+    electron: () => process.versions.electron
 })
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    openFile: () => ipcRenderer.invoke('dialog:openFile')
+    openFile: () => ipcRenderer.invoke('dialog:openFile'),
+    readXlsxFile: (filePath) => ipcRenderer.invoke('readXlsxFile', filePath),
+    insertTextIntoWord: (data,
+        presetObjects,
+        wordFilePath,
+        wordFileDir) => ipcRenderer.invoke('insertTextIntoWord',
+            data,
+            presetObjects,
+            wordFilePath,
+            wordFileDir)
 })

@@ -2,19 +2,22 @@
 <html>
 
 <head>
-    <meta charset = "UTF-8">
-    <meta name = "author" content = "Jonathan Wang">
-    <meta name = "viewport" content = "width=device-width,initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="author" content="Jonathan Wang">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-    <link rel = "stylesheet" type = "text/css" href = "style.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <!--<link rel = "icon" type = "image/png" href = "Icons/logofavicon.png">-->
 </head>
 
 <body>
     <h1>Excel to Word Processor</h1>
     <h3>Process text from an Excel sheet and insert it into a Word document by replacing tags</h3>
-    <p>👋</p>
+
+    <div class="centered">
+        <p>The output file will be <b>output.docx</b> in the same directory.</p>
+    </div>
 
     <!--info is auto filled by js, adds details of runtime versions-->
     <!--TODO remove-->
@@ -46,15 +49,17 @@
     <div class="centered">
         <button id="add-excel-group" type="button">Add Excel Group</button>
     </div>
-    
+
     <div class="centered">
         <button id="run">Move text to Word doc!</button>
     </div>
 
     <div class="centered">
-        <p>Status: <div id="status"></div></p>
+        <p>Status:
+        <div id="status"></div>
+        </p>
     </div>
-    
+
 </body>
 <script src="./renderer.js"></script>
 

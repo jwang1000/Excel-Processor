@@ -1,12 +1,7 @@
 const information = document.getElementById("info");
 information.innerText = `This app is using Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`;
 
-const func = async () => {
-    const response = await window.versions.ping();
-    console.log(response); // prints out "pong"
-}
-
-func();
+/// Section - create callback functions for excel and word files
 
 const excelButton = document.getElementById("excel-file-button");
 let excelFilePath = "";
@@ -21,12 +16,14 @@ excelButton.addEventListener("click", async () => {
 
 const wordButton = document.getElementById("word-file-button");
 let wordFilePath = "";
+let wordFileDir = "";
 let wordFileIsValid = false;
 const filePathWordElement = document.getElementById("file-path-word");
 wordButton.addEventListener("click", async () => {
     const filePath = await window.electronAPI.openFile();
     filePathWordElement.innerText = getFileName(filePath);
     wordFilePath = filePath;
+    wordFileDir = getFileDir(filePath);
     wordFileIsValid = getFileEnding(filePath) === "docx";
 });
 
@@ -34,9 +31,18 @@ function getFileName(path) {
     return path.split('\\').pop().split('/').pop();
 }
 
+function getFileDir(path) {
+    return path.match(/(.*)[\/\\]/)[1] || '';
+}
+
 function getFileEnding(path) {
     return path.split('.').pop();
 }
+
+
+
+
+/// Section - Create HTML elements for rows
 
 const allDOMExcelGroups = document.getElementById("all-excel-groups");
 const addButton = document.getElementById("add-excel-group");
@@ -53,7 +59,7 @@ function createExcelGroup() {
     const DOMGroup = document.createElement("div");
     DOMGroup.classList.add("excelGroup");
     const groupId = maxGroupId;
-    let excelGroupObject = {id: groupId};  // save for later so we can retrieve the inputs
+    let excelGroupObject = { id: groupId };  // save for later so we can retrieve the inputs
     maxGroupId += 1;
 
     const columnInput = document.createElement("input");
@@ -110,7 +116,7 @@ function createExcelGroup() {
             numOfRandomCellsLabel.style.display = "block";
         }
     });
-    
+
     excelGroupObject.selectionType = selectionType;
     excelGroupObject.numOfRandomCells = numOfRandomCells;
     dropdownDiv.appendChild(selectionType);
@@ -126,7 +132,6 @@ function createExcelGroup() {
     const deleteButton = document.createElement("button");
     deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", () => {
-        console.log("delete");
         allDOMExcelGroups.removeChild(DOMGroup);
         excelGroupObjects = excelGroupObjects.filter(obj => obj.id != groupId);
     });
@@ -136,9 +141,12 @@ function createExcelGroup() {
     excelGroupObjects.push(excelGroupObject);
 }
 
-
-
 createExcelGroup();
+
+
+
+
+/// Section - move data from Excel to Word
 
 const statusText = document.getElementById("status");
 
@@ -155,17 +163,25 @@ function setStatusSuccess() {
 }
 
 runButton.addEventListener("click", () => {
-    insertTextIntoWord();
+    moveExcelDataToWord();
 });
+
+function convertColumnToIndex(val) {
+    let base = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', i, j, result = 0;
+
+    for (i = 0, j = val.length - 1; i < val.length; i += 1, j -= 1) {
+        result += Math.pow(base.length, j) * (base.indexOf(val[i]));
+    }
+
+    return result;
+};
 
 // for use in saving presets
 // list of objects with same data as excelGroupObject, but without the html elements
 let presetObjects = [];
 let processing = false;
 
-// TODO
-// for now, just checking data
-function insertTextIntoWord() {
+async function moveExcelDataToWord() {
     if (processing) return;  // don't do anything if process has already started
 
     if (!excelFileIsValid) {
@@ -180,41 +196,45 @@ function insertTextIntoWord() {
 
     let allFieldsFilled = true;
     processing = true;
+    presetObjects = [];
     setStatusNeutral();
     statusText.innerHTML = "Processing...";
 
+    // fill preset objects array
     excelGroupObjects.forEach(obj => {
         let presetObject = {};
 
-        console.log(obj.id);
         presetObject.id = obj.id;
 
-        console.log(obj.columnInput);
-        console.log(obj.columnInput.value);
         if (!obj.columnInput.value) {
             allFieldsFilled = false;
             return;
         } else {
+            // save column character for JSON save data
             presetObject.column = obj.columnInput.value;
+            // save column index (0-indexed) for ease of processing excel data
+            presetObject.columnIndex = convertColumnToIndex(presetObject.column);
         }
 
-        console.log(obj.startRowInput.value);
-        if (!obj.startRowInput.value) {
+        // validate rows: make sure 0 < startRow <= endRow
+        if (!obj.startRowInput.value || !obj.endRowInput.value) {
             allFieldsFilled = false;
             return;
         } else {
-            presetObject.startRow = parseInt(obj.startRowInput.value);
+            const a = parseInt(obj.startRowInput.value);
+            const b = parseInt(obj.endRowInput.value);
+            const startRow = Math.min(a, b);
+            const endRow = Math.max(a, b);
+
+            if (startRow === 0) {
+                allFieldsFilled = false;
+                return;
+            }
+
+            presetObject.startRow = startRow;
+            presetObject.endRow = endRow;
         }
 
-        console.log(obj.endRowInput.value);
-        if (!obj.endRowInput.value) {
-            allFieldsFilled = false;
-            return;
-        } else {
-            presetObject.endRow = parseInt(obj.endRowInput.value);
-        }
-
-        console.log(obj.selectionType.value);
         if (!obj.selectionType.value) {
             allFieldsFilled = false;
             return;
@@ -222,7 +242,6 @@ function insertTextIntoWord() {
             presetObject.useAllCells = obj.selectionType.value === "all";
         }
 
-        console.log(obj.numOfRandomCells.value);
         if (!obj.numOfRandomCells.value && !presetObject.useAllCells) {
             allFieldsFilled = false;
             return;
@@ -230,7 +249,6 @@ function insertTextIntoWord() {
             presetObject.numOfRandomCells = parseInt(obj.numOfRandomCells.value);
         }
 
-        console.log(obj.tagToReplace.value);
         if (!obj.tagToReplace.value) {
             allFieldsFilled = false;
             return;
@@ -239,9 +257,8 @@ function insertTextIntoWord() {
         }
 
         presetObjects.push(presetObject);
-        console.log(presetObject);
     });
-    
+
     if (!allFieldsFilled) {
         setStatusError();
         presetObjects = [];
@@ -253,7 +270,42 @@ function insertTextIntoWord() {
     statusText.innerHTML = "Processing...";
     console.log(presetObjects);
 
-    // TODO create async function to get text from Excel
+    // async function to get text from Excel
+    const data = await getExcelData();
 
+    const info = await insertTextIntoWord(data);
+
+    if (info === "") {
+        statusText.innerHTML = "Success!"
+        setStatusSuccess();
+    } else {
+        statusText.innerHTML = info;
+    }
     processing = false;
+}
+
+function getExcelData() {
+    return new Promise(resolve => {
+        let data = [];
+        for (let i = 0; i < presetObjects.length; i++) {
+            data.push("");
+        }
+        window.electronAPI.readXlsxFile(excelFilePath).then((allRows) => {
+            // `rows` is an array of rows
+            // each row being an array of cells.
+            allRows.forEach((rowData, rowIndex) => {
+                presetObjects.forEach((presetObject, objIndex) => {
+                    // rowIndex starts from 0 but Excel rows start from 1
+                    if (presetObject.startRow <= rowIndex + 1 && rowIndex + 1 <= presetObject.endRow) {
+                        data[objIndex] += rowData[presetObject.columnIndex] + "\n";
+                    }
+                });
+            });
+            resolve(data);
+        });
+    });
+}
+
+async function insertTextIntoWord(data) {
+    return await window.electronAPI.insertTextIntoWord(data, presetObjects, wordFilePath, wordFileDir);
 }

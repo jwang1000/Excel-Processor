@@ -1,5 +1,10 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
+const fs = require("fs");
 const path = require('path')
+
+const readXlsxFile = require('read-excel-file/node');
+const PizZip = require("pizzip");
+const Docxtemplater = require("docxtemplater");
 
 async function handleFileOpen() {
     const { canceled, filePaths } = await dialog.showOpenDialog();
@@ -8,6 +13,42 @@ async function handleFileOpen() {
     } else {
         return filePaths[0];
     }
+}
+
+async function insertTextIntoWord(_event, data, presetObjects, wordFilePath, wordFileDir) {
+    try {
+        const content = fs.readFileSync(
+            wordFilePath,
+            "binary"
+        );
+
+        const zip = new PizZip(content);
+        const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true
+        });
+
+        // Render the document (replace tags)
+        let renderObj = {};
+        presetObjects.forEach((presetObject, objIndex) => {
+            renderObj[presetObject.tagToReplace] = data[objIndex];
+        });
+        doc.render(renderObj);
+
+        const buf = doc.getZip().generate({
+            type: "nodebuffer",
+            // compression: DEFLATE adds a compression step.
+            // For a 50MB output document, expect 500ms additional CPU time
+            compression: "DEFLATE",
+        });
+
+        // buf is a nodejs Buffer, you can either write it to a
+        // file or res.send it with express for example.
+        fs.writeFileSync(path.resolve(wordFileDir, "output.docx"), buf);
+    } catch (error) {
+        return error;
+    }
+    return "";
 }
 
 const createWindow = () => {
@@ -21,13 +62,17 @@ const createWindow = () => {
         }
     });
     win.maximize();
-    ipcMain.handle('ping', () => 'pong');
     win.loadFile('index.html');
     win.show();
 }
 
 app.whenReady().then(() => {
     ipcMain.handle('dialog:openFile', handleFileOpen);
+    ipcMain.handle('readXlsxFile', (_event, filePath) => {
+        return readXlsxFile(filePath);
+    });
+    ipcMain.handle('insertTextIntoWord', insertTextIntoWord);
+
     createWindow();
 
     // On macOS it's common to re-create a window in the app when the
