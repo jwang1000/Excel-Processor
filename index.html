@@ -8,7 +8,6 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
     <link rel="stylesheet" type="text/css" href="style.css">
-    <!--<link rel = "icon" type = "image/png" href = "Icons/logofavicon.png">-->
 </head>
 
 <body>
@@ -16,12 +15,8 @@
     <h3>Process text from an Excel sheet and insert it into a Word document by replacing tags</h3>
 
     <div class="centered">
-        <p>The output file will be <b>output.docx</b> in the same directory.</p>
+        <p>The output file will be <b>output.docx</b> in the same location as the Word file.</p>
     </div>
-
-    <!--info is auto filled by js, adds details of runtime versions-->
-    <!--TODO remove-->
-    <p id="info"></p>
 
     <div id="excel-word-files">
         <div class="fileGroup">
@@ -51,6 +46,9 @@
     </div>
 
     <div class="centered">
+        <p>Note that any {tags} in the Word doc that are not defined above will be replaced with "undefined".</p>
+        <p><b style="color: red">Warning:</b> if there is another word doc named "output.docx" in the same location as
+            the given word file, it will be deleted!</p>
         <button id="run">Move text to Word doc!</button>
     </div>
 

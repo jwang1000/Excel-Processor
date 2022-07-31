@@ -1,6 +1,3 @@
-const information = document.getElementById("info");
-information.innerText = `This app is using Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`;
-
 /// Section - create callback functions for excel and word files
 
 const excelButton = document.getElementById("excel-file-button");
@@ -206,12 +203,13 @@ async function moveExcelDataToWord() {
 
         presetObject.id = obj.id;
 
-        if (!obj.columnInput.value) {
+        // check if column is empty or contains non-alpha characters
+        if (!obj.columnInput.value || !/^[a-z]+$/i.test(obj.columnInput.value)) {
             allFieldsFilled = false;
             return;
         } else {
             // save column character for JSON save data
-            presetObject.column = obj.columnInput.value;
+            presetObject.column = obj.columnInput.value.toUpperCase();
             // save column index (0-indexed) for ease of processing excel data
             presetObject.columnIndex = convertColumnToIndex(presetObject.column);
         }
@@ -262,7 +260,7 @@ async function moveExcelDataToWord() {
     if (!allFieldsFilled) {
         setStatusError();
         presetObjects = [];
-        statusText.innerHTML = "<b>Error</b>: at least one value was not given.";
+        statusText.innerHTML = "<b>Error</b>: at least one value was not given or is invalid.";
         processing = false;
         return;
     }
