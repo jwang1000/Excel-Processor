@@ -1,15 +1,18 @@
-html, body {
+html,
+body {
     margin: 0.25rem 0.5rem;
     font-family: Verdana, Trebuchet, Helvetica, Arial, sans-serif;
     font-size: 16px;
     text-align: left;
     line-height: 1.5;
 
-    display: flex; 
-    flex-direction: column; 
+    display: flex;
+    flex-direction: column;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     text-align: center;
     margin: 0.5rem 0;
 }
@@ -18,27 +21,50 @@ p {
     margin: 0.25rem 0;
 }
 
-input, select, button {
+input,
+select,
+button {
     font-family: Verdana, Trebuchet, Helvetica, Arial, sans-serif;
 }
 
 /* File upload area */
-#excel-word-files {
+#excel-word-files,
+#presets {
     width: 100%;
     margin: 1rem 0;
     display: flex;
     flex-direction: row;
 }
 
-.fileGroup {
+.fileGroup,
+.presetDiv {
     width: 50%;
-    max-width: 50%;  
+    max-width: 50%;
     display: flex;
-    flex-direction: column;     
+    flex-direction: column;
 }
 
-#excel-file-button, #word-file-button {
+#excel-file-button,
+#word-file-button {
     width: 10rem;
+}
+
+
+/* Presets area */
+#presets {
+    border-top: 2px solid #00000030;
+}
+
+#presets div {
+    padding: 1.5rem 3rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+}
+
+#save-preset-input,
+#load-preset-select {
+    margin-left: 0.5rem;
+    margin-right: 1rem;
 }
 
 /* Rows for specifying which cells to pull */
@@ -54,18 +80,32 @@ input, select, button {
     justify-content: space-around;
 }
 
-.excelGroup input, .excelGroup button, .excelGroup p, .excelGroup select {
+.excelGroup input,
+.excelGroup button,
+.excelGroup p,
+.excelGroup select,
+#save-preset-input,
+#load-preset-select,
+#save-preset-button,
+#load-preset-button {
     text-align: center;
     width: 8rem;
     height: 1.5rem;
 }
 
-.excelGroup input, .excelGroup select {
+.excelGroup input,
+.excelGroup select,
+#save-preset-input,
+#load-preset-select {
     border: none;
     border-bottom: solid gray 1px;
 }
 
-.excelGroup select, .excelGroup button {
+.excelGroup select,
+.excelGroup button,
+#load-preset-select,
+#save-preset-button,
+#load-preset-button {
     height: 1.9rem;
 }
 
@@ -74,7 +114,8 @@ input, select, button {
     text-align: center;
 }
 
-#add-excel-group, #run {
+#add-excel-group,
+#run {
     width: 12rem;
     height: 2rem;
     margin: 0.5rem 0;

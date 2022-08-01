@@ -29,6 +29,23 @@
         </div>
     </div>
 
+    <div id="presets">
+        <div class="presetDiv">
+            <p>Save preset as:</p>
+            <input id="save-preset-input">
+            </input>
+            <button id="save-preset-button">Save</button>
+            <p id="save-preset-error"><b>Error</b>: at least one value was not given or is invalid.</p>
+        </div>
+        <div class="presetDiv">
+            <p>Load preset:</p>
+            <select id="load-preset-select">
+                <option></option>
+            </select>
+            <button id="load-preset-button">Load</button>
+        </div>
+    </div>
+
     <!--Auto filled by js-->
     <div id="all-excel-groups">
         <div class="excelGroup">
@@ -47,7 +64,7 @@
 
     <div class="centered">
         <p>Note that any {tags} in the Word doc that are not defined above will be replaced with "undefined".</p>
-        <p><b style="color: red">Warning:</b> if there is another word doc named "output.docx" in the same location as
+        <p><b>Warning:</b> if there is another word doc named "output.docx" in the same location as
             the given word file, it will be deleted!</p>
         <button id="run">Move text to Word doc!</button>
     </div>

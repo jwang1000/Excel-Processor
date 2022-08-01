@@ -5,6 +5,33 @@ const path = require("path")
 const readXlsxFile = require("read-excel-file/node");
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
+const Store = require("electron-store");
+const { SocketAddress } = require("net");
+
+// Save data format:
+// store->presetList is a list of strings of all the names of presets
+// store->preset.<name> is the list of presetObjects saved under the preset named <name>
+const store = new Store();
+
+// presetList is passed to the renderer to fill the dropdown options
+let presetList;
+
+/// Loads all presets already saved - presets are loaded on startup
+function getPresetList(_event) {
+    return presetList;
+}
+
+/// For use when loading a specific preset
+async function loadPreset(_event, presetName) {
+    return store.get("preset")[presetName];
+}
+
+/// For saving a preset - updates the preset list as well
+async function savePreset(_event, presetName, presetObjects) {
+    let presets = store.get("preset");
+    presets[presetName] = presetObjects;
+    store.set(presets);
+}
 
 async function handleFileOpen() {
     const { canceled, filePaths } = await dialog.showOpenDialog();
@@ -62,15 +89,15 @@ function openAboutWindow() {
         height: 400,
         resizable: false,
         width: 500,
-        title: 'About',
+        title: "About",
         minimizable: false,
         fullscreenable: false,
         autoHideMenuBar: true,
     });
 
-    aboutWindow.loadURL('file://' + __dirname + '/about/about.html');
+    aboutWindow.loadURL("file://" + __dirname + "/about/about.html");
 
-    aboutWindow.on('closed', () => {
+    aboutWindow.on("closed", () => {
         aboutWindow = null;
     });
 }
@@ -193,7 +220,7 @@ const createWindow = () => {
         minHeight: 500,
         title: "Excel to Word",
         show: false,
-        icon:'excel-word-logo.png',
+        icon: "excel-word-logo.png",
         webPreferences: {
             preload: path.join(__dirname, "preload.js")
         }
@@ -209,6 +236,12 @@ app.whenReady().then(() => {
         return readXlsxFile(filePath);
     });
     ipcMain.handle("insertTextIntoWord", insertTextIntoWord);
+    ipcMain.handle("getPresetList", getPresetList);
+    ipcMain.handle("loadPreset", loadPreset);
+    ipcMain.handle("savePreset", savePreset);
+
+    // load list of presets
+    presetList = store.get("presetList");
 
     createWindow();
 

@@ -39,6 +39,50 @@ function getFileEnding(path) {
 
 
 
+/// Section - fill preset options and create callbacks
+
+const presetInput = document.getElementById("save-preset-input");
+const presetSaveButton = document.getElementById("save-preset-button");
+const presetSaveError = document.getElementById("save-preset-error");
+const presetSelect = document.getElementById("load-preset-select");
+const presetLoadButton = document.getElementById("load-preset-button");
+
+let listOfPresets = [];
+presetSaveError.style.display = "none";
+
+async function updateListOfPresets() {
+    listOfPresets = await window.electronAPI.getPresetList();
+    listOfPresets.forEach(preset => {
+        const option = document.createElement("option");
+        option.value = preset;
+        option.text = preset;
+        presetSelect.appendChild(option);
+    });
+}
+
+updateListOfPresets();
+
+presetSaveButton.addEventListener("click", async () => {
+    presetSaveError.style.display = "none";
+    const name = presetInput.value;
+    const success = createPresetObjects();
+    if (success) {
+        await window.electronAPI.savePreset(name, presetObjects);
+        updateListOfPresets();  // might have updated existing preset instead of adding new one
+    } else {
+        presetSaveError.style.display = "block";
+    }
+});
+
+presetLoadButton.addEventListener("click", async () => {
+    presetObjects = await window.electronAPI.loadPreset(presetSelect.value);
+    // TODO - need to create all HTML DOM elements
+});
+
+
+
+
+
 /// Section - Create HTML elements for rows
 
 const allDOMExcelGroups = document.getElementById("all-excel-groups");
@@ -46,7 +90,7 @@ const addButton = document.getElementById("add-excel-group");
 const runButton = document.getElementById("run");
 
 let maxGroupId = 0;  // keep a unique identifier for each group for ease of deletion
-let excelGroupObjects = [];
+let excelGroupObjects = [];  // all HTML elements for moving data, will need to be converted to presetObjects
 
 addButton.addEventListener("click", () => {
     createExcelGroup();
@@ -178,26 +222,13 @@ function convertColumnToIndex(val) {
 let presetObjects = [];
 let processing = false;
 
-async function moveExcelDataToWord() {
-    if (processing) return;  // don't do anything if process has already started
-
-    if (!excelFileIsValid) {
-        setStatusError();
-        statusText.innerHTML = "<b>Error</b>: there is no valid Excel file.";
-        return;
-    } else if (!wordFileIsValid) {
-        setStatusError();
-        statusText.innerHTML = "<b>Error</b>: there is no valid Word file.";
-        return;
-    }
-
+// If successful, presetObjects is filled with an array containing all the objects, ready
+//   for reading the excel file or saving to a preset. Returns true.
+// If unsuccessful, presetObjects is an empty array and returns false.
+function createPresetObjects() {
     let allFieldsFilled = true;
-    processing = true;
     presetObjects = [];
-    setStatusNeutral();
-    statusText.innerHTML = "Processing...";
 
-    // fill preset objects array
     excelGroupObjects.forEach(obj => {
         let presetObject = {};
 
@@ -258,8 +289,32 @@ async function moveExcelDataToWord() {
     });
 
     if (!allFieldsFilled) {
-        setStatusError();
         presetObjects = [];
+    }
+
+    return allFieldsFilled;
+}
+
+async function moveExcelDataToWord() {
+    if (processing) return;  // don't do anything if process has already started
+
+    if (!excelFileIsValid) {
+        setStatusError();
+        statusText.innerHTML = "<b>Error</b>: there is no valid Excel file.";
+        return;
+    } else if (!wordFileIsValid) {
+        setStatusError();
+        statusText.innerHTML = "<b>Error</b>: there is no valid Word file.";
+        return;
+    }
+
+    processing = true;
+    setStatusNeutral();
+    statusText.innerHTML = "Processing...";
+
+    const success = createPresetObjects();
+    if (!success) {
+        setStatusError();
         statusText.innerHTML = "<b>Error</b>: at least one value was not given or is invalid.";
         processing = false;
         return;
