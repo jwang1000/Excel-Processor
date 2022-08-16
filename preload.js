@@ -15,5 +15,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
             wordFileDir),
     getPresetList: () => ipcRenderer.invoke("getPresetList"),
     loadPreset: (presetName) => ipcRenderer.invoke("loadPreset", presetName),
-    savePreset: (presetName, presetObjects) => ipcRenderer.invoke("savePreset", presetName, presetObjects)
+    savePreset: (presetName, presetObjects) => ipcRenderer.invoke("savePreset", presetName, presetObjects),
+    deletePreset: (presetName) => ipcRenderer.invoke("deletePreset", presetName)
 });

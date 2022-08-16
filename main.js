@@ -6,7 +6,6 @@ const readXlsxFile = require("read-excel-file/node");
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const Store = require("electron-store");
-const { SocketAddress } = require("net");
 
 // Save data format:
 // store->presetList is a list of strings of all the names of presets
@@ -14,7 +13,8 @@ const { SocketAddress } = require("net");
 const store = new Store();
 
 // presetList is passed to the renderer to fill the dropdown options
-let presetList;
+// list of strings (names of all presets)
+let presetList = [];
 
 /// Loads all presets already saved - presets are loaded on startup
 function getPresetList(_event) {
@@ -28,9 +28,18 @@ async function loadPreset(_event, presetName) {
 
 /// For saving a preset - updates the preset list as well
 async function savePreset(_event, presetName, presetObjects) {
-    let presets = store.get("preset");
-    presets[presetName] = presetObjects;
-    store.set(presets);
+    store.set(`preset.${presetName}`, presetObjects);
+    presetList = Object.keys(store.get("preset"));
+}
+
+async function deletePreset(_event, presetName) {
+    store.delete(`preset.${presetName}`);
+    const presets = store.get("preset");
+    if (presets) {
+        presetList = Object.keys(presets);
+    } else {
+        presetList = [];
+    }
 }
 
 async function handleFileOpen() {
@@ -239,9 +248,15 @@ app.whenReady().then(() => {
     ipcMain.handle("getPresetList", getPresetList);
     ipcMain.handle("loadPreset", loadPreset);
     ipcMain.handle("savePreset", savePreset);
+    ipcMain.handle("deletePreset", deletePreset);
 
     // load list of presets
-    presetList = store.get("presetList");
+    const presets = store.get("preset");
+    if (presets) {
+        presetList = Object.keys(presets);
+    } else {
+        presetList = [];
+    }
 
     createWindow();
 

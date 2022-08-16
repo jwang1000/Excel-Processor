@@ -46,12 +46,18 @@ const presetSaveButton = document.getElementById("save-preset-button");
 const presetSaveError = document.getElementById("save-preset-error");
 const presetSelect = document.getElementById("load-preset-select");
 const presetLoadButton = document.getElementById("load-preset-button");
+const presetDeleteButton = document.getElementById("delete-preset-button");
 
 let listOfPresets = [];
 presetSaveError.style.display = "none";
 
 async function updateListOfPresets() {
     listOfPresets = await window.electronAPI.getPresetList();
+    // clear current list of presets
+    while (presetSelect.firstChild) {
+        presetSelect.removeChild(presetSelect.lastChild);
+    }
+
     listOfPresets.forEach(preset => {
         const option = document.createElement("option");
         option.value = preset;
@@ -64,19 +70,49 @@ updateListOfPresets();
 
 presetSaveButton.addEventListener("click", async () => {
     presetSaveError.style.display = "none";
+    presetSaveError.innerHTML = "";
     const name = presetInput.value;
     const success = createPresetObjects();
-    if (success) {
+    if (name == "") {
+        presetSaveError.innerHTML = "<b>Save Error</b>: no name was given.";
+        presetSaveError.style.display = "block";
+    }
+    else if (success) {
         await window.electronAPI.savePreset(name, presetObjects);
         updateListOfPresets();  // might have updated existing preset instead of adding new one
     } else {
+        presetSaveError.innerHTML = "<b>Save Error</b>: at least one value was not given or is invalid.";
         presetSaveError.style.display = "block";
     }
 });
 
 presetLoadButton.addEventListener("click", async () => {
+    if (!presetSelect.value || presetSelect.value === "") {
+        return;
+    }
+
     presetObjects = await window.electronAPI.loadPreset(presetSelect.value);
-    // TODO - need to create all HTML DOM elements
+    // create all HTML DOM elements from scratch
+    if (presetObjects.length > 0) {
+        while (allDOMExcelGroups.firstChild) {
+            allDOMExcelGroups.removeChild(allDOMExcelGroups.lastChild);
+        }
+
+        excelGroupObjects = [];
+        maxGroupId = 0;
+        presetObjects.forEach(object => {
+            createExcelGroup(true, object);
+        });
+    }
+});
+
+presetDeleteButton.addEventListener("click", async () => {
+    if (!presetSelect.value || presetSelect.value === "") {
+        return;
+    }
+
+    await window.electronAPI.deletePreset(presetSelect.value);
+    updateListOfPresets();
 });
 
 
@@ -96,26 +132,38 @@ addButton.addEventListener("click", () => {
     createExcelGroup();
 });
 
-function createExcelGroup() {
+function createExcelGroup(fromPreset = false, presetObject = {}) {
     const DOMGroup = document.createElement("div");
     DOMGroup.classList.add("excelGroup");
+    if (fromPreset) {
+        maxGroupId = Math.max(maxGroupId, presetObject.id);
+    }
     const groupId = maxGroupId;
     let excelGroupObject = { id: groupId };  // save for later so we can retrieve the inputs
     maxGroupId += 1;
 
     const columnInput = document.createElement("input");
+    if (fromPreset) {
+        columnInput.value = presetObject.column;
+    }
     excelGroupObject.columnInput = columnInput;
     DOMGroup.appendChild(columnInput);
 
     const startRowInput = document.createElement("input");
     startRowInput.type = "number";
     startRowInput.min = "1";
+    if (fromPreset) {
+        startRowInput.value = presetObject.startRow;
+    }
     excelGroupObject.startRowInput = startRowInput;
     DOMGroup.appendChild(startRowInput);
 
     const endRowInput = document.createElement("input");
     endRowInput.type = "number";
     endRowInput.min = "1";
+    if (fromPreset) {
+        endRowInput.value = presetObject.endRow;
+    }
     excelGroupObject.endRowInput = endRowInput;
     DOMGroup.appendChild(endRowInput);
 
@@ -133,6 +181,9 @@ function createExcelGroup() {
     optionRandom.value = "random";
     optionRandom.text = "Randomly Pick";
     selectionType.appendChild(optionRandom);
+    if (fromPreset) {
+        selectionType.value = presetObject.useAllCells ? "all" : "random";
+    }
 
     const numOfRandomCellsLabel = document.createElement("p");
     numOfRandomCellsLabel.innerHTML = "Pick how many cells?";
@@ -144,6 +195,14 @@ function createExcelGroup() {
     numOfRandomCells.min = "1";
     numOfRandomCells.style.display = "none";
     numOfRandomCells.style.width = "7.5rem";
+    if (fromPreset) {
+        numOfRandomCells.value = presetObject.numOfRandomCells;
+        if (selectionType.value === "random") {
+            numOfRandomCells.style.display = "block";
+            numOfRandomCellsLabel.style.display = "block";
+        }
+    }
+
     // make input invisible unless the randomly pick option is selected
     selectionType.addEventListener("click", () => {
         // sigh... this checks the previous value instead of the new one
@@ -166,7 +225,11 @@ function createExcelGroup() {
     DOMGroup.appendChild(dropdownDiv);
 
     const tagToReplace = document.createElement("input");
-    tagToReplace.value = "replace" + groupId;  // default tag
+    if (fromPreset) {
+        tagToReplace.value = presetObject.tagToReplace;
+    } else {
+        tagToReplace.value = "replace" + groupId;  // default tag
+    }
     excelGroupObject.tagToReplace = tagToReplace;
     DOMGroup.appendChild(tagToReplace);
 
@@ -321,7 +384,6 @@ async function moveExcelDataToWord() {
     }
     setStatusNeutral();
     statusText.innerHTML = "Processing...";
-    console.log(presetObjects);
 
     // async function to get text from Excel
     const data = await getExcelData();

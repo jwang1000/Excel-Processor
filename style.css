@@ -67,6 +67,10 @@ button {
     margin-right: 1rem;
 }
 
+#save-preset-error {
+    text-align: center;
+}
+
 /* Rows for specifying which cells to pull */
 #all-excel-groups {
     border-top: 2px solid #00000030;
@@ -87,10 +91,16 @@ button {
 #save-preset-input,
 #load-preset-select,
 #save-preset-button,
-#load-preset-button {
+#load-preset-button,
+#delete-preset-button {
     text-align: center;
     width: 8rem;
     height: 1.5rem;
+}
+
+#delete-preset-button {
+    width: 5rem;
+    margin-left: 1rem;
 }
 
 .excelGroup input,
@@ -105,7 +115,8 @@ button {
 .excelGroup button,
 #load-preset-select,
 #save-preset-button,
-#load-preset-button {
+#load-preset-button,
+#delete-preset-button {
     height: 1.9rem;
 }
 
