@@ -51,7 +51,7 @@ async function handleFileOpen() {
     }
 }
 
-async function insertTextIntoWord(_event, data, presetObjects, wordFilePath, wordFileDir) {
+async function insertTextIntoWord(_event, data, presetObjects, wordFilePath, wordFileDir, outputFile) {
     try {
         const content = fs.readFileSync(
             wordFilePath,
@@ -80,7 +80,7 @@ async function insertTextIntoWord(_event, data, presetObjects, wordFilePath, wor
 
         // buf is a nodejs Buffer, you can either write it to a
         // file or res.send it with express for example.
-        fs.writeFileSync(path.resolve(wordFileDir, "output.docx"), buf);
+        fs.writeFileSync(path.resolve(wordFileDir, `${outputFile}.docx`), buf);
     } catch (error) {
         return error;
     }

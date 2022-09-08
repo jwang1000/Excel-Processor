@@ -1,5 +1,8 @@
 /// Section - create callback functions for excel and word files
 
+const outputFileInput = document.getElementById("output-file");
+outputFileInput.value = "output";
+
 const excelButton = document.getElementById("excel-file-button");
 let excelFilePath = "";
 let excelFileIsValid = false;
@@ -25,14 +28,17 @@ wordButton.addEventListener("click", async () => {
 });
 
 function getFileName(path) {
+    if (!path) return "";
     return path.split('\\').pop().split('/').pop();
 }
 
 function getFileDir(path) {
+    if (!path) return "";
     return path.match(/(.*)[\/\\]/)[1] || '';
 }
 
 function getFileEnding(path) {
+    if (!path) return "";
     return path.split('.').pop();
 }
 
@@ -422,5 +428,6 @@ function getExcelData() {
 }
 
 async function insertTextIntoWord(data) {
-    return await window.electronAPI.insertTextIntoWord(data, presetObjects, wordFilePath, wordFileDir);
+    const outputFile = outputFileInput.value ? outputFileInput.value : "output";
+    return await window.electronAPI.insertTextIntoWord(data, presetObjects, wordFilePath, wordFileDir, outputFile);
 }

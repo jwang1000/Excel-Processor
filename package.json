@@ -27,7 +27,10 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "./excel-word-logo",
+        "name": "Excel Processor"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
