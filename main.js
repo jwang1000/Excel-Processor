@@ -7,6 +7,8 @@ const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const Store = require("electron-store");
 
+if (require('electron-squirrel-startup')) return;
+
 // Save data format:
 // store->presetList is a list of strings of all the names of presets
 // store->preset.<name> is the list of presetObjects saved under the preset named <name>
