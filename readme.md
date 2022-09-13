@@ -2,6 +2,9 @@
 
 Current version: v0.0.1
 
+[Download link here!](https://github.com/jwang1000/Excel-Processor/releases/tag/v0.0.1) Click on the file `Excel-Processor.v0.0.1.zip` to download it. This contains the installer and all required files.
+
+
 ## About and Usage
 
 An easy to use application that takes data from an Excel sheet and inserts it into a Word document.
@@ -15,7 +18,7 @@ You can specify which cells to select, the name of each tag, the name of the out
 
 ## Installation
 
-Download the installer. Unzip the folder and run the `Excel Processor-0.0.1 Setup.exe` file.
+Download the installer (link above). Unzip the folder and run the `Excel Processor-0.0.1 Setup.exe` file.
 
 The app will open automatically once it is finished installing, and there will also be a shortcut installed on the desktop.
 
